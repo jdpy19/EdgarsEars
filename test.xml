@@ -1,0 +1,44 @@
+{
+    'title': '8-K - FIRST BUSINESS FINANCIAL SERVICES, INC. (0001521951) (Filer)', 
+    'title_detail': {
+        'type': 'text/plain', 
+        'language': None, 
+        'base': 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom', 
+        'value': '8-K - FIRST BUSINESS FINANCIAL SERVICES, 
+        INC. (0001521951) (Filer)'
+    }, 
+    'links': [
+        {
+            'rel': 'alternate', 
+        'type': 'text/html', 
+        'href': 'https://www.sec.gov/Archives/edgar/data/1521951/000152195121000020/0001521951-21-000020-index.htm'
+        }
+    ], 
+    'link': 'https://www.sec.gov/Archives/edgar/data/1521951/000152195121000020/0001521951-21-000020-index.htm', 
+    'summary': '<b>Filed:</b> 2021-02-01 <b>AccNo:</b> 0001521951-21-000020 <b>Size:</b> 180 KB\n<br />Item 5.02: Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers: Compensatory Arrangements of Certain Officers', 
+    'summary_detail': {
+        'type': 'text/html', 
+        'language': None, 
+        'base': 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom', 
+        'value': '<b>Filed:</b> 2021-02-01 <b>AccNo:</b> 0001521951-21-000020 <b>Size:</b> 180 KB\n<br />Item 5.02: Departure of Directors or Certain Officers; Election of Directors; Appointment of Certain Officers: Compensatory Arrangements of Certain Officers'
+    }, 
+    'updated': '2021-02-01T16:10:31-05:00', 
+    'updated_parsed': time.struct_time(tm_year=2021, 
+        tm_mon=2, 
+        tm_mday=1, 
+        tm_hour=21, 
+        tm_min=10, 
+        tm_sec=31, 
+        tm_wday=0, 
+        tm_yday=32, 
+        tm_isdst=0), 
+    'tags': [
+        {
+            'term': '8-K', 
+            'scheme': 'https://www.sec.gov/', 
+            'label': 'form type'
+        }
+    ], 
+    'id': 'urn:tag:sec.gov,2008:accession-number=0001521951-21-000020', 
+    'guidislink': False
+}
