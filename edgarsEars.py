@@ -1,3 +1,4 @@
+import datetime
 import time
 import feedparser
 import requests
@@ -31,12 +32,12 @@ def bitcoin_edgar_entry(entry):
             'isBitcoin': True
         }
 
-def get_connection(username, password, database):
-    return psycopg2.connect(f"dbname={database} user={username}")
+def get_connection(database):
+    return psycopg2.connect(f"dbname={database}")
 
 def create_edgar_table(connection):
     cursor = connection.cursor()
-    try: 
+    try:
         cursor.execute('''
             CREATE TABLE EDGAR_BITCOIN_FILING (
                 id serial PRIMARY KEY,
@@ -54,9 +55,25 @@ def create_edgar_table(connection):
         print(e)
         return False
 
+def filter_bitcoin_entries(entries, connection, table='EDGAR_BITCOIN_FILING'):
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT * FROM {table} WHERE updated > now() - interval '1 day';")
+    existing_rows = cursor.fetchall()
+    output_entries = []
+    for entry in entries:
+        isNewEntry = True
+        for existing_row in existing_rows:
+            if (entry.get('title') == existing_row[1]):
+                isNewEntry = False
+
+        if isNewEntry:
+            output_entries.append(entry)
+
+    return output_entries
+
+
 def insert_bitcoin_entries(entries, connection, table='EDGAR_BITCOIN_FILING'):
     cursor = connection.cursor()
-    print(entries)
     query = cursor.mogrify("INSERT INTO {} ({}) VALUES {} RETURNING {}".format(
                         table,
                         ', '.join(entries[0].keys()),
@@ -71,37 +88,47 @@ def insert_bitcoin_entries(entries, connection, table='EDGAR_BITCOIN_FILING'):
     except Exception as e:
         print(e)
         return False
-    
+
+def print_bitcoin_entries(entries):
+    output = ''
+    for entry in entries:
+        title = entry.get('title')
+        link = entry.get('link')
+        output += f'{title}: {link}\n'
+    return output
+
 if __name__ == '__main__':
-    EDGAR_RSS = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=&company=&dateb=&owner=include&start=0&count=40&output=atom'
+    EDGAR_RSS = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&CIK=&type=s-1&company=&dateb=&owner=include&start=0&count=40&output=atom'
     SLEEP_HOURS = 0
-    SLEEP_MINUTES = 10
+    SLEEP_MINUTES = 5
     SLEEP_TIME = SLEEP_HOURS*60*60 + SLEEP_MINUTES*60 # HOURS * 60 min/h * 60 s/min MINUTES * 60 s/min
-    
-    username = 'edgar_user'
-    password = 'ElongatedMuskrat'
+
     database = 'edgar_bitcoin_filings'
 
-    connection = get_connection(username, password, database)
+    connection = get_connection(database)
     print(create_edgar_table(connection))
     connection.close()
 
     while True:
         edgar_feed = feedparser.parse(EDGAR_RSS)
         entries = get_edgar_entries(edgar_feed)
-        
+
         bitcoin_entries = []
         for entry in entries:
             temp_entry = bitcoin_edgar_entry(entry)
             if temp_entry:
                 bitcoin_entries.append(temp_entry)
-        
-        print(bitcoin_entries)
+
+        connection = get_connection(database)
+        bitcoin_entries = filter_bitcoin_entries(bitcoin_entries, connection)
+
         if bitcoin_entries:
             print(f'BITCOIN: {len(bitcoin_entries)} entry(s)!')
-            connection = get_connection(username, password, database)
+            print(print_bitcoin_entries(bitcoin_entries))
             insert_bitcoin_entries(bitcoin_entries, connection, table='EDGAR_BITCOIN_FILING')
-            connection.close()
-        print('SLEEPING...')
+        else:
+            now = datetime.datetime.now()
+            print(f'{now} NO BTC ETF NEWS...')
+        connection.close()
         time.sleep(SLEEP_TIME)
 
